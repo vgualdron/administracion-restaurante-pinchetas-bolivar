@@ -63,12 +63,13 @@ $data->prefijoFactura = $prefijoCaja;
 
 $use = $conexion->prepare(" select * from pinchetas_restaurante.pedido pedi
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				order by pedi.pedi_numerofactura asc; "); 						
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
 $use ->execute();
 $cantidadFacturasUsadas = $use->rowCount();
 $row = $use->fetchAll();
@@ -77,12 +78,13 @@ $data->cantidadFacturasUsadas = $cantidadFacturasUsadas;
 
 $use = $conexion->prepare(" select * from pinchetas_restaurante.pedido pedi
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				order by pedi.pedi_numerofactura asc limit 1; "); 						
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
 $use ->execute();
 $row = $use->fetch();
 $numeroPrimeraFacturaUsada = $row['pedi_numerofactura'];
@@ -90,12 +92,13 @@ $data->numeroPrimeraFacturaUsada = $numeroPrimeraFacturaUsada;
 
 $use = $conexion->prepare(" select * from pinchetas_restaurante.pedido pedi
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				order by pedi.pedi_numerofactura desc limit 1; "); 						
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
 $use ->execute();
 $row = $use->fetch();
 $numeroUltimaFacturaUsada = $row['pedi_numerofactura'];
@@ -109,13 +112,14 @@ $use = $conexion->prepare(" select
 				from pinchetas_restaurante.detallepedido depe
 				inner join pinchetas_restaurante.pedido pedi on (pedi.pedi_id = depe.pedi_id)
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				order by pedi.pedi_numerofactura asc; "); 	
 					
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
 $use ->execute();
 $row = $use->fetch();
 $totalVentas = number_format($row['total'],0,",",".");
@@ -154,15 +158,16 @@ if ($count > 0) {
 						inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
 						inner join pinchetas_restaurante.producto prod on (prod.prod_id = depe.prod_id)
 						inner join pinchetas_restaurante.tipoproducto tipr on (tipr.tipr_id = prod.tipr_id)
-						where pedi.pedi_fecha = ?
+						where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 						and pedi.pedi_numerofactura > 0
 						and espe.espe_descripcion = ?
 						and tipr.tipr_id = ?
 						order by pedi.pedi_numerofactura asc; "); 
 						
 		$use2->bindValue(1, $fechaReporte);
-		$use2->bindValue(2, 'PAGO');
-		$use2->bindValue(3, $registro['tipr_id']);
+		$use2->bindValue(2, $fechaReporte);
+		$use2->bindValue(3, 'PAGO');
+		$use2->bindValue(4, $registro['tipr_id']);
 	
 		$use2 ->execute();
 		$count2 = $use2->rowCount();
@@ -196,15 +201,16 @@ $use = $conexion->prepare(" select
 				pedi.pedi_fecha as fecha
 				from pinchetas_restaurante.pedido pedi
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				and pedi.pedi_tipopago = ?
 				order by pedi.pedi_numerofactura asc; "); 	
 					
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
-$use->bindValue(3, 'TARJETA');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
+$use->bindValue(4, 'TARJETA');
 $use ->execute();
 $row = $use->fetch();
 
@@ -217,15 +223,16 @@ $use = $conexion->prepare(" select
 				from pinchetas_restaurante.detallepedido depe
 				inner join pinchetas_restaurante.pedido pedi on (pedi.pedi_id = depe.pedi_id)
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				and pedi.pedi_tipopago = ?
 				order by pedi.pedi_numerofactura asc; "); 	
 					
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
-$use->bindValue(3, 'TARJETA');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
+$use->bindValue(4, 'TARJETA');
 $use ->execute();
 $row = $use->fetch();
 
@@ -241,15 +248,16 @@ $use = $conexion->prepare("  select
 				pedi.pedi_fecha as fecha
 				from pinchetas_restaurante.pedido pedi
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				and pedi.pedi_tipopago = ?
 				order by pedi.pedi_numerofactura asc; "); 	
 					
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
-$use->bindValue(3, 'EFECTIVO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
+$use->bindValue(4, 'EFECTIVO');
 $use ->execute();
 $row = $use->fetch();
 
@@ -262,15 +270,16 @@ $use = $conexion->prepare(" select
 				from pinchetas_restaurante.detallepedido depe
 				inner join pinchetas_restaurante.pedido pedi on (pedi.pedi_id = depe.pedi_id)
 				inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
-				where pedi.pedi_fecha = ?
+				where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
 				and pedi.pedi_numerofactura > 0
 				and espe.espe_descripcion = ?
 				and pedi.pedi_tipopago = ?
 				order by pedi.pedi_numerofactura asc; "); 	
 					
 $use->bindValue(1, $fechaReporte);
-$use->bindValue(2, 'PAGO');
-$use->bindValue(3, 'EFECTIVO');
+$use->bindValue(2, $fechaReporte);
+$use->bindValue(3, 'PAGO');
+$use->bindValue(4, 'EFECTIVO');
 $use ->execute();
 $row = $use->fetch();
 
