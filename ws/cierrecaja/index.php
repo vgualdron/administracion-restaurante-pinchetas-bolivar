@@ -30,7 +30,7 @@ try {
         inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
         inner join pinchetas_general.personanatural pena on (pena.pege_id = depe.depe_registradopor)
         where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
-        and depe.operacion = 'I';");
+        and depe.operacion = 'D';");
 
       $sql->bindValue(1, $_GET['fecha']);
       $sql->bindValue(2, $_GET['fecha']);
