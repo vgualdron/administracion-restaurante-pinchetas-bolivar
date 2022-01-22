@@ -17,7 +17,7 @@
                     <b-button variant="primary" :disabled="!filtro" @click.stop="filtro = ''">x</b-button>
                     <b-btn
                       class="ml-3"
-                      @click.stop="consultarCierreCaja(); consultarGastos();"
+                      @click.stop="consultarCierreCaja(); consultarGastos(); consultarItemsBorrados();"
                       variant="primary">
                       Consultar </b-btn>
                   </b-input-group-append>
@@ -137,7 +137,8 @@ export default {
       filtro: "",
       porPagina: 20,
       paginaActual: 1,
-      limpiarBase: "SI"
+      limpiarBase: "SI",
+      itemsDeleteds: []
     };
   },
   methods: {
@@ -149,6 +150,28 @@ export default {
         return num;
       }
       return 'X';
+    },
+    consultarItemsBorrados: function() {
+      this.$loader.open({ message: "Cargando ..." });
+      var self = this;
+      var frm = {
+        params: {
+          fecha: this.filtro,
+          itemsdelete: 'SI'
+        }
+      };
+      this.$http.get("ws/cierrecaja/", frm).then(resp => {
+          self.itemsDeleteds = resp.data;
+          self.$loader.close();
+        })
+        .catch(resp => {
+          self.$loader.close();
+          if (resp.data && resp.data.mensaje) {
+            self.$toast.error(resp.data.mensaje);
+          } else {
+            self.$toast.error("No se pudo obtener los items borrados para el cierre de caja.");
+          }
+        });
     },
     consultarCierreCaja: function() {
       if (!this.filtro) {
@@ -245,6 +268,7 @@ export default {
       var frm = {
         fecha: this.filtro,
         items: this.items,
+        itemsDeleteds: this.itemsDeleteds,
         gastos: this.gastos,
         titulo: 'Cierre de caja del dia ' + this.filtro
       };

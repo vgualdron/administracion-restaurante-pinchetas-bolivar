@@ -14,7 +14,32 @@ try {
   
   //  listar todos los posts o solo uno
   if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-      if (isset($_GET['fecha']) && isset($_GET['ventas'])) {
+    if (isset($_GET['fecha']) && isset($_GET['itemsdelete'])) {
+      $sql = $conexion->prepare("select 
+        depe.prod_id idproducto,
+        depe.prod_cantidad cantidad,
+        prod.prod_descripcion producto,
+        espe.espe_descripcion as estadopedido,
+        CONCAT(pena.pena_primernombre, ' ', pena.pena_primerapellido) as persona,
+        mesa.mesa_descripcion as mesa,
+        depe.depe_fechacambio as fecha
+        from pinchetas_restaurante._detallepedido depe
+        inner join pinchetas_restaurante.pedido pedi on (pedi.pedi_id = depe.pedi_id)
+        inner join pinchetas_restaurante.mesa mesa on (pedi.mesa_id = mesa.mesa_id)
+        inner join pinchetas_restaurante.producto prod on (prod.prod_id = depe.prod_id)
+        inner join pinchetas_restaurante.estadopedido espe on (espe.espe_id = pedi.espe_id)
+        inner join pinchetas_general.personanatural pena on (pena.pege_id = depe.depe_registradopor)
+        where pedi.pedi_fecha BETWEEN DATE_ADD(?, INTERVAL 0 SECOND) AND DATE_ADD(?, INTERVAL 86399 SECOND)
+        and depe.operacion = 'I';");
+
+      $sql->bindValue(1, $_GET['fecha']);
+      $sql->bindValue(2, $_GET['fecha']);
+      $sql->execute();
+      $sql->setFetchMode(PDO::FETCH_ASSOC);
+      header("HTTP/1.1 200 OK");
+      echo json_encode( $sql->fetchAll() );
+      exit();
+    } else if (isset($_GET['fecha']) && isset($_GET['ventas'])) {
         $sql = $conexion->prepare("SELECT 
           DISTINCT 
           prod.prod_descripcion,
