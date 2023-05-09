@@ -176,7 +176,8 @@ export default {
       porPagina: 20,
       paginaActual: 1,
       estados: [],
-      tipoProductos: []
+      tipoProductos: [],
+	  minStock: 0,
     };
   },
   methods: {
@@ -208,6 +209,7 @@ export default {
           idtipoproducto: obj.idtipoproducto,
           descripciontipoproducto: obj.descripciontipoproducto
         };
+		this.minStock = this.objeto.cantidad;
       }
       this.showModal = true;
     },
@@ -220,10 +222,10 @@ export default {
         this.$toast.error("Debe escribir el precio");
         return false;
       }
-      if (this.objeto.cantidad <= 0) {
-        this.$toast.error("Debe escribir el cantidad");
-        return false;
-      }
+	  if (parseInt(this.objeto.cantidad) <= parseInt(this.minStock)) {
+		this.$toast.error("Debe escribir el cantidad mayor a la actual");
+		return false;
+	  }
       return true;
     },
     listar: function() {
